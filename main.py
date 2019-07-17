@@ -127,9 +127,13 @@ def main(args):
 
         # 均方误差MSE
         result_mse = mse(image_original_temp, image_created_temp)
+        result_mse = mse(image_original_temp, image_original_temp)
+        result_mse = mse(image_created_temp, image_created_temp)
         
         # 结构相似性SSIM(相似度指数)
         result_ssim = ssim(image_original_temp, image_created_temp)
+        result_ssim = ssim(image_original_temp, image_original_temp)
+        result_ssim = ssim(image_created_temp, image_created_temp)
         # result_ssim = tf_ms_ssim(image_original_temp, image_created_temp)
         # print(result_ssim)
 
