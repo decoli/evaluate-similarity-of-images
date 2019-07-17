@@ -122,14 +122,14 @@ def main(args):
     list_image_original_sorted = sort_humanly(list_image_original)
 
     for index in range(0, len(list_image_created_sorted), 1):
-        image_created_temp = cv2.imread(list_image_created_sorted[index + 100], flags=2)
-        image_original_temp = cv2.imread(list_image_original_sorted[index + args.step + 100], flags=2)
+        image_created_temp = cv2.imread(list_image_created_sorted[index], flags=2)
+        image_original_temp = cv2.imread(list_image_original_sorted[index + args.step], flags=2)
 
         # 均方误差MSE
         result_mse = mse(image_original_temp, image_created_temp)
-        print(result_mse)
         
         # 结构相似性SSIM(相似度指数)
+        result_ssim = ssim(image_original_temp, image_created_temp)
         # result_ssim = tf_ms_ssim(image_original_temp, image_created_temp)
         # print(result_ssim)
 
