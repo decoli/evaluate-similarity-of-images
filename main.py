@@ -17,6 +17,21 @@ def mse(image_original, image_created):
     error /= float(image_original.shape[0] * image_created.shape[1])
     return error
 
+def psnr_block(image_original_temp, image_created_temp):
+    def read_img(path):
+        return tf.image.decode_image(tf.read_file(path))
+    
+    def psnr(tf_img1, tf_img2):
+        return tf.image.psnr(tf_img1, tf_img2, max_val=255)
+    
+    def _main():
+        t1 = read_img(image_original_temp)
+        t2 = read_img(image_created_temp)
+        with tf.Session() as sess:
+            sess.run(tf.global_variables_initializer())
+            y = sess.run(psnr(t1, t2))
+            print(y)
+
 # 即m×n单色图像 I 和 K（原图像与处理图像）之间均方误差
 # def MSE(I, K):
 #     x, y = tf.cast(I, tf.float32), tf.cast(K, tf.float32)
@@ -138,7 +153,7 @@ def main(args):
         # print(result_ssim)
 
         # 峰值信噪比PSNR
-        result_psnr = PSNR(image_original_temp, image_created_temp)
+        result_psnr = psnr_block(image_original_temp, image_created_temp)
         print(result_psnr)
 
 def tryint(s):
