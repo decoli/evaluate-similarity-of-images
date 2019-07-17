@@ -1,6 +1,11 @@
 # https://www.jianshu.com/p/43d548ad6b5d
 
+import glob
+import os
+
+import cv2
 import tensorflow as tf
+
 
 # 均方误差MSE
 # 即m×n单色图像 I 和 K（原图像与处理图像）之间均方误差
@@ -85,12 +90,57 @@ def PSNR(I, K):
     psnr = 10*tf.log(255**2/mse)/tf.log(10)
     return psnr
 
+def argument():
+    parser = argparse.ArgumentParser(
+        usage = "To evaluate the similarity of images which are created and original."
+        )
+    parser.add_argument("--dir-image-created", type=str, help="dir of images created.")
+    parser.add_argument("--dir-image-original", type=str, help="dir of images original.")
+    parser.add_argument("--step", type=int, help="step between the two images which are created and original.")
+    args = parser.parse_args()
+
+    return args
+
+def main(args):
+
+    path_image_created = os.path.join(args.dir_image_created, "*")
+    list_image_created = glob.glob(path_image_created)
+    list_image_created_sorted = sort_humanly(list_image_created)
+
+    path_image_original = os.path.join(args.dir_image_original, "*")
+    list_image_original = glob.glob(path_image_original)
+    list_image_original_sorted = sort_humanly(list_image_original)
+
+    for index in range(0, len(list_image_created_sorted), 1):
+        image_created_temp = cv2.imread(list_image_created_sorted[index], flags=2)
+        image_original_temp = cv2.imread(list_image_original_sorted[index + args.step], flags=2)
+
+        # 均方误差MSE
+        result_mse = MSE(image_original_temp, image_created_temp)
+        print(result_mse)
+        
+        # 结构相似性SSIM
+        result_ssim = tf_ms_ssim(image_original_temp, image_created_temp)
+        print(result_ssim)
+
+        # 峰值信噪比PSNR
+        result_psnr = PSNR(image_original_temp, image_created_temp)
+        print(result_psnr)
+
+def tryint(s):
+    try:
+        return int(s)
+    except ValueError:
+        return s
+
+def str2int(v_str):
+    return [tryint(sub_str) for sub_str in re.split('([0-9]+)', v_str)]
+
+def sort_humanly(v_list):
+    return sorted(v_list, key=str2int)
+
 if __name__ == '__main__':
-    # 均方误差MSE
-    MSE()
+    args = argument()
+    main(args)
 
-    # 结构相似性SSIM
-    tf_ms_ssim()
-
-    # 峰值信噪比PSNR
-    PSNR()
+    print("evaluation")
